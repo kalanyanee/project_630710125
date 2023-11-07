@@ -7,7 +7,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     const double borderRadius = 10.0; // ความโค้งขอบ
     const double borderWidth = 1.0; // ความหนาขอบ
-    const double shadowBlurRadius = 5.0; // รัศมีความเบลอของเงา
+    const double shadowBlurRadius = 3.0; // รัศมีความเบลอของเงา
 
     return Scaffold(
       appBar: PreferredSize(
@@ -29,9 +29,9 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Align(
-              alignment: Alignment.topCenter, // จัดวางด้านบน
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color:
-                              Colors.green.withOpacity(0.5), // สีเขียวที่เบลอ
+                              Colors.grey.withOpacity(0.5), // สีที่เบลอ
                           blurRadius: shadowBlurRadius, // รัศมีความเบลอ
                         ),
                       ],
@@ -98,7 +98,7 @@ class HomePage extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.green.withOpacity(0.5),
+                          color: Colors.grey.withOpacity(0.5),
                           blurRadius: shadowBlurRadius,
                         ),
                       ],
@@ -145,7 +145,6 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Align(
-              alignment: Alignment.topCenter, // จัดวางด้านบน
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -158,7 +157,7 @@ class HomePage extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.green.withOpacity(0.5),
+                          color: Colors.grey.withOpacity(0.5),
                           blurRadius: shadowBlurRadius,
                         ),
                       ],
@@ -210,7 +209,7 @@ class HomePage extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.green.withOpacity(0.5),
+                          color: Colors.grey.withOpacity(0.5),
                           blurRadius: shadowBlurRadius,
                         ),
                       ],
