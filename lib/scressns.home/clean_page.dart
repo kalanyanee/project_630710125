@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 
-class AirAddress extends StatefulWidget {
+class CleanAddress extends StatefulWidget {
   @override
-  _AirAddressState createState() => _AirAddressState();
+  _CleanAddressState createState() => _CleanAddressState();
 }
 
-class _AirAddressState extends State<AirAddress> {
+class _CleanAddressState extends State<CleanAddress> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController workingHoursController = TextEditingController();
   final TextEditingController englishController = TextEditingController(); // เพิ่มบรรทัดนี้
-  int machineCount = 1;
+  int CountTime = 1;
+  int CountRoom = 1;
   bool isEnglishSelected = false;
   String paymentMethod = '';
 
-  _AirAddressState() {
+  _CleanAddressState() {
     isEnglishSelected = false; // กำหนดค่าเริ่มต้นเพิ่มเติม (หรือไม่ก็ได้)
   }
 
@@ -23,9 +24,16 @@ class _AirAddressState extends State<AirAddress> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back), // ใช้ไอคอนลูกศรสีขาว
+          onPressed: () {
+            Navigator.of(context).pop(); // คำสั่งให้กลับไปหน้าก่อนหน้า
+          },
+        ),
         title: Text('กลับ'),
       ),
-      body: Padding(
+    body: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +51,7 @@ class _AirAddressState extends State<AirAddress> {
             ),
             SizedBox(height: 20), // เพิ่มระยะห่าง
             Text(
-              'เวลาทำงาน:',
+              'เวลาจอง:',
               style: TextStyle(fontSize: 16),
             ),
             DateTimeField(
@@ -81,11 +89,12 @@ class _AirAddressState extends State<AirAddress> {
               },
               decoration: InputDecoration(
                 hintText: 'เลือกเวลาที่นี่',
+                suffixIcon: Icon(Icons.calendar_today),
               ),
             ),
             SizedBox(height: 20),
             Text(
-              'จำนวนเครื่อง:',
+              'เวลาทำงาน:',
               style: TextStyle(fontSize: 16),
             ),
             Row(
@@ -93,22 +102,58 @@ class _AirAddressState extends State<AirAddress> {
                 IconButton(
                   icon: Icon(Icons.remove),
                   onPressed: () {
-                    if (machineCount > 1) {
+                    if (CountTime > 1) {
                       setState(() {
-                        machineCount--;
+                        CountTime--;
                       });
                     }
                   },
                 ),
                 Text(
-                  machineCount.toString(),
+                  CountTime.toString(),
+                  style: TextStyle(fontSize: 16),
+                ),
+                Text(
+                  ' ชั่วโมง',
                   style: TextStyle(fontSize: 16),
                 ),
                 IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () {
                     setState(() {
-                      machineCount++;
+                      CountTime++;
+                    });
+                  },
+                ),
+              ],
+            ),
+
+            SizedBox(height: 20),
+            Text(
+              'จำนวนห้อง:',
+              style: TextStyle(fontSize: 16),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.remove),
+                  onPressed: () {
+                    if (CountRoom > 1) {
+                      setState(() {
+                        CountRoom--;
+                      });
+                    }
+                  },
+                ),
+                Text(
+                  CountRoom.toString(),
+                  style: TextStyle(fontSize: 16),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    setState(() {
+                      CountRoom++;
                     });
                   },
                 ),
@@ -180,24 +225,94 @@ class _AirAddressState extends State<AirAddress> {
               ],
             ),
             Center(
-              child: ElevatedButton(
+              child:ElevatedButton(
                 onPressed: () {
-                  // ทำตรวจสอบและประมวลผลข้อมูลที่ผู้ใช้กรอก แล้วดำเนินการตามที่คุณต้องการ
-                  // ตรวจสอบค่าที่อยู่, เวลาทำงาน, จำนวนเครื่อง, การเลือกภาษาอังกฤษ, และช่องทางการชำระเงิน
-                  // ถ้าข้อมูลถูกต้อง, คุณสามารถดำเนินการตามที่คุณต้องการ หรือแสดงข้อความยืนยันอื่น ๆ
-                  // และถ้าข้อมูลไม่ถูกต้อง, คุณสามารถแสดงข้อความแจ้งเตือนผู้ใช้
+                  // ตรวจสอบค่าที่อยู่, เวลาทำงาน, จำนวนห้อง, การเลือกภาษาอังกฤษ, และช่องทางการชำระเงิน
+                  String address = addressController.text;
+                  DateTime workingHours = DateTime.now(); // ลบการเรียก DateTimeField.defaultSavedDate
+                  int roomCount = CountRoom;
+                  // ไม่ต้องประกาศตัวแปร isEnglishSelected อีกครั้ง
+
+                  // ตรวจสอบความถูกต้องของข้อมูล
+                  if (address.isEmpty) {
+                    // ถ้าที่อยู่ว่างเปล่า
+                    // แสดงข้อความแจ้งเตือนผู้ใช้
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('คำอธิบายข้อผิดพลาด'),
+                          content: Text('โปรดกรอกที่อยู่'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text('ปิด'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else if (workingHours.isBefore(DateTime.now())) {
+                    // ถ้าเวลาทำงานอยู่ในอดีต
+                    // แสดงข้อความแจ้งเตือนผู้ใช้
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('คำอธิบายข้อผิดพลาด'),
+                          content: Text('เวลาทำงานต้องอยู่ในอนาคต'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text('ปิด'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else if (roomCount < 1) {
+                    // ถ้าจำนวนห้องน้อยกว่า 1
+                    // แสดงข้อความแจ้งเตือนผู้ใช้
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('คำอธิบายข้อผิดพลาด'),
+                          content: Text('จำนวนห้องต้องมากกว่าหรือเท่ากับ 1'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text('ปิด'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    // ถ้าข้อมูลถูกต้อง, คุณสามารถดำเนินการตามที่คุณต้องการ
+                    // ตัวอย่าง: ส่งข้อมูลไปยังเซิร์ฟเวอร์หรือแสดงข้อความยืนยันอื่น ๆ
+                  }
                 },
-                child: Text('ยืนยัน'),//กดยืนยันให้ไปหน้าคำนวนเงินที่ต้องจ่าย
+                child: Text('ยืนยัน'), // กดยืนยันให้ไปหน้าคำนวนเงินที่ต้องจ่าย
               ),
+
+
             )
           ],
         ),
       ),
+    ),
     );
   }
   void main() {
     runApp(MaterialApp(
-      home: AirAddress(),
+      home: CleanAddress(),
     )
     );
   }

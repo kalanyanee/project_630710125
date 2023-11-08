@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:project/scressns.home/DeepCleaning_page.dart';
+import 'package:project/scressns.home/Package_page.dart';
+import 'package:project/scressns.home/Air_page.dart';
+import 'package:project/scressns.home/clean_page.dart';
+
+import 'Profile_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,6 +31,18 @@ class HomePage extends StatelessWidget {
             ),
           ),
           centerTitle: true,
+          leading: InkWell(
+
+            child: Icon(
+              Icons.account_circle, // ใช้ไอคอนลูกศรสีขาว
+              size: 40,
+            ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ProfilePage(), // นำทางไปยังหน้า DeepAddress
+              ));
+            },
+          ),
         ),
       ),
       body: Center(
@@ -35,30 +53,24 @@ class HomePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(borderRadius), // ความโค้งขอบ
-                      border: Border.all(
-                        color: Colors.green.shade300, // สีเขียว
-                        width: borderWidth, // ความหนาขอบ
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              Colors.grey.withOpacity(0.5), // สีที่เบลอ
-                          blurRadius: shadowBlurRadius, // รัศมีความเบลอ
-                        ),
-                      ],
-                    ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => AirAddress(), // นำทางไปยังหน้า AirAddress
+                      ));
+                    },
                     child: Stack(
                       children: [
                         Container(
-                          width: 240,
-                          height: 270,
+                          width: 240, // ปรับความกว้าง
+                          height: 270, // ปรับความสูง
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Colors.white, //สีกล่อง
                             borderRadius: BorderRadius.circular(borderRadius),
+                            border: Border.all(
+                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
+                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                            ),
                           ),
                         ),
                         Positioned(
@@ -89,28 +101,34 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      border: Border.all(
-                        color: Colors.green.shade300,
-                        width: borderWidth,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: shadowBlurRadius,
-                        ),
-                      ],
-                    ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => CleanAddress(), // นำทางไปยังหน้า CleanAddress
+                      ));
+                    },
                     child: Stack(
                       children: [
                         Container(
                           width: 240,
                           height: 270,
                           decoration: BoxDecoration(
-                            color: Colors.white,
                             borderRadius: BorderRadius.circular(borderRadius),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
+                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Image.asset(
+                            'assets/images/mop.png', // แทน 'assets/image2.png' ด้วยเส้นทางของรูปภาพที่คุณต้องการใช้
+                            fit: BoxFit.contain,
                           ),
                         ),
                         Positioned(
@@ -148,20 +166,12 @@ class HomePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      border: Border.all(
-                        color: Colors.green.shade300,
-                        width: borderWidth,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: shadowBlurRadius,
-                        ),
-                      ],
-                    ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DeepAddress(), // นำทางไปยังหน้า DeepAddress
+                      ));
+                    },
                     child: Stack(
                       children: [
                         Container(
@@ -169,7 +179,11 @@ class HomePage extends StatelessWidget {
                           height: 270,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(borderRadius),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
+                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                            ),
                           ),
                         ),
                         Positioned(
@@ -199,21 +213,13 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      border: Border.all(
-                        color: Colors.green.shade300,
-                        width: borderWidth,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: shadowBlurRadius,
-                        ),
-                      ],
-                    ),
+                  SizedBox(width: 20),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PackageAddress(), // นำทางไปยังหน้า PackageAddress
+                      ));
+                    },
                     child: Stack(
                       children: [
                         Container(
@@ -221,7 +227,11 @@ class HomePage extends StatelessWidget {
                           height: 270,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(borderRadius),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
+                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                            ),
                           ),
                         ),
                         Positioned(
@@ -257,7 +267,12 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: HomePage(),
+  ));
 }
