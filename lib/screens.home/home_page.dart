@@ -1,13 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:project/scressns.home/DeepCleaning_page.dart';
-import 'package:project/scressns.home/Package_page.dart';
-import 'package:project/scressns.home/Air_page.dart';
-import 'package:project/scressns.home/clean_page.dart';
-
+import 'package:project/screens.home/DeepCleaning_page.dart';
+import 'package:project/screens.home/Package_page.dart';
+import 'package:project/screens.home/Air_page.dart';
+import 'package:project/screens.home/clean_page.dart';
 import 'Profile_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+   HomePage({Key? key}) : super(key: key);
+  final List<Map<String, dynamic>> sections = [
+    {
+      'image': 'assets/images/air.png',
+      'text': 'ทำความสะอาดเครื่องปรับอากาศ',
+      'route': AirAddress(),
+    },
+    {
+      'image': 'assets/images/mop.png',
+      'text': 'ทำความสะอาดบ้าน',
+      'route': CleanAddress(),
+    },
+    {
+      'image': 'assets/images/home.png',
+      'text': 'Deep Cleaning',
+      'route': DeepAddress(),
+    },
+    {
+      'image': 'assets/images/calendar.png',
+      'text': 'จองงานแบบแพ็คเกจ',
+      'route': PackageAddress(),
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +53,6 @@ class HomePage extends StatelessWidget {
           ),
           centerTitle: true,
           leading: InkWell(
-
             child: Icon(
               Icons.account_circle, // ใช้ไอคอนลูกศรสีขาว
               size: 40,
