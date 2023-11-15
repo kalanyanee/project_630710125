@@ -1,50 +1,123 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+
+import '../Payment/Pay_package.dart';
+
+class PackageAddressData {
+  String address;
+  DateTime workingHours;
+  int? selectedRoomSize;
+  int? selectedPackageDays;
+  String phone;
+  bool isEnglishSelected;
+
+  PackageAddressData({
+    required this.address,
+    required this.workingHours,
+    required this.selectedRoomSize,
+    required this.phone,
+    required this.isEnglishSelected,
+    required this.selectedPackageDays,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'address': address,
+      'workingHours': workingHours.toUtc().toIso8601String(),
+      'selectedRoomSize':selectedRoomSize,
+      'selectedPackageDays':selectedPackageDays,
+      'isEnglishSelected': isEnglishSelected,
+      'phone': phone,
+    };
+  }
+}
 
 class PackageAddress extends StatefulWidget {
   @override
   _PackageAddressState createState() => _PackageAddressState();
 }
+
 class _PackageAddressState extends State<PackageAddress> {
   final TextEditingController addressController = TextEditingController();
-  int? selectedRoomSize = 0; // Default room size
-  int? selectedPackageDays = 2; // แพ็คเกจเริ่มต้น (2 วัน)
+  String phone = ''; // เปลี่ยนจาก PackageAddress.phone เป็นตัวแปรอินสแตนซ์
+  int? selectedRoomSize = 0; // ขนาดห้องเริ่มต้น
+  int? selectedPackageDays = 4; // แพ็คเกจเริ่มต้น (2 วัน)
+  late DateTime? selectedDate; // ตัวแปรในการเก็บวันที่ที่เลือก
+  late TimeOfDay? selectedTime; // ตัวแปรในการเก็บเวลาที่เลือก
+  late PackageAddressData packageAddressData;
+
+  @override
+  void initState() {
+    super.initState();
+    packageAddressData = PackageAddressData(
+      address: '',
+      workingHours: DateTime.now(),
+      selectedRoomSize: 0,
+      selectedPackageDays: 2,
+      isEnglishSelected: false,
+      phone: '',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back), // ใช้ไอคอนลูกศรสีขาว
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop(); // คำสั่งให้กลับไปหน้าก่อนหน้า
+            Navigator.of(context).pop();
           },
         ),
         title: Text('กลับ'),
       ),
-      body:SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'ที่อยู่:',
-              style: TextStyle(fontSize: 16),
-            ),
-            TextField(
-              controller: addressController,
-              maxLines: 1,
-              decoration: InputDecoration(
-                hintText: 'ใส่รายละเอียดที่อยู่ของคุณที่นี่',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'ที่อยู่:',
+                style: TextStyle(fontSize: 16),
               ),
-            ),
-
-            SizedBox(height: 20),
-            Text(
-              'ขนาดห้อง/บ้าน:',
-              style: TextStyle(fontSize: 16),
-            ),
+              TextField(
+                controller: addressController,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  hintText: 'ใส่รายละเอียดที่อยู่ของคุณที่นี่',
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'เบอร์:',
+                style: TextStyle(fontSize: 16),
+              ),
+              TextField(
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    packageAddressData.phone = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'ใส่เบอร์โทรศัพท์',
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'ขนาดห้อง/บ้าน:',
+                style: TextStyle(fontSize: 16),
+              ),
             Row(
               children: [
                 Radio(
@@ -56,7 +129,7 @@ class _PackageAddressState extends State<PackageAddress> {
                     });
                   },
                 ),
-                Text('0-120 ตร.ม.'),
+                Text('1-120 ตร.ม.'),
                 Radio(
                   value: 121,
                   groupValue: selectedRoomSize,
@@ -92,12 +165,12 @@ class _PackageAddressState extends State<PackageAddress> {
 
             SizedBox(height: 20),
             Text(
-              'จำนวนวัน/สัปดาห์:',
+              'จำนวนวัน/เดือน:',
               style: TextStyle(fontSize: 16),
             ),
             Row(
               children: [
-                for (int daysOption in [2, 3, 4, 5, 6, 7]) // รายการวันที่เลือก
+                for (int daysOption in [4, 5, 6, 7]) // รายการวันที่เลือก
                   Column(
                     children: [
                       Radio(
@@ -123,37 +196,40 @@ class _PackageAddressState extends State<PackageAddress> {
               children: List.generate(selectedPackageDays ?? 0, (index) {
                 return DateTimeField(
                   format: DateFormat("yyyy-MM-dd HH:mm"),
-                  onShowPicker: (context, currentValue) {
-                    return showDatePicker(
+                  onShowPicker: (context, currentValue) async {
+                    DateTime? selectedDate = await showDatePicker(
                       context: context,
                       firstDate: DateTime(2000),
                       initialDate: currentValue ?? DateTime.now(),
                       lastDate: DateTime(2101),
-                    ).then((selectedDate) {
-                      if (selectedDate != null) {
-                        return showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(
-                            currentValue ?? DateTime.now(),
-                          ),
-                        ).then((selectedTime) {
-                          if (selectedTime != null) {
-                            DateTime selectedDateTime = DateTime(
-                              selectedDate.year,
-                              selectedDate.month,
-                              selectedDate.day,
-                              selectedTime.hour,
-                              selectedTime.minute,
-                            );
-                            return selectedDateTime;
-                          } else {
-                            return currentValue;
-                          }
+                    );
+
+                    if (selectedDate != null) {
+                      TimeOfDay? selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.fromDateTime(
+                          currentValue ?? DateTime.now(),),
+                      );
+                      if (selectedTime != null) {
+                        setState(() {
+                          packageAddressData.workingHours = DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
+                          );
                         });
-                      } else {
-                        return currentValue;
+                        return DateTime(
+                          selectedDate.year,
+                          selectedDate.month,
+                          selectedDate.day,
+                          selectedTime.hour,
+                          selectedTime.minute,
+                        );
                       }
-                    });
+                    }
+                    return currentValue;
                   },
                   decoration: InputDecoration(
                     hintText: 'เลือกเวลาที่นี่',
@@ -166,19 +242,55 @@ class _PackageAddressState extends State<PackageAddress> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // ทำตรวจสอบและประมวลผลข้อมูลที่ผู้ใช้กรอก แล้วดำเนินการตามที่คุณต้องการ
-                  // ตรวจสอบค่าที่อยู่, เวลาทำงาน, จำนวนเครื่อง, การเลือกภาษาอังกฤษ, และช่องทางการชำระเงิน
-                  // ถ้าข้อมูลถูกต้อง, คุณสามารถดำเนินการตามที่คุณต้องการ หรือแสดงข้อความยืนยันอื่น ๆ
-                  // และถ้าข้อมูลไม่ถูกต้อง, คุณสามารถแสดงข้อความแจ้งเตือนผู้ใช้
+                  sendDataToApi(packageAddressData);
+                  showDialog(
+                    context: context,
+                    builder: (context) => Package(
+                      address: addressController.text,
+                      selectedRoomSize : selectedRoomSize,
+                      selectedPackageDays:selectedPackageDays,
+                      selectedDateTime: packageAddressData.workingHours,
+                      phone: packageAddressData.phone,
+                      isEnglishSelected: packageAddressData.isEnglishSelected,
+
+                    ),
+                  );
                 },
+
                 child: Text('ยืนยัน'),//กดยืนยันให้ไปหน้าคำนวนเงินที่ต้องจ่าย
               ),
             )
 
           ],
+
         ),
       ),
       ),
     );
   }
+}
+
+Future<void> sendDataToApi(PackageAddressData data) async {
+  final apiUrl = 'http://192.168.141.192/addresses';
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: jsonEncode(data.toJson()),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('ส่งข้อมูลสำเร็จ');
+    } else {
+      print('ไม่สามารถส่งข้อมูลได้. รหัสสถานะ: ${response.statusCode}');
+    }
+  } catch (error) {
+    //print('เกิดข้อผิดพลาดในการส่งข้อมูล: $error');
+  }
+}
+void main() {
+  runApp(MaterialApp(
+    home: PackageAddress(),
+  ));
 }

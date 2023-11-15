@@ -2,42 +2,77 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import '../Model/air_model.dart';
-import '../Payment/pay_payment.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-class AirAddress extends StatefulWidget {
+import '../Payment/pay_air.dart';
+
+class AirAddressData { // เก็บข้อมูลที่เกี่ยวข้องที่อยู่model
+  String address;
+  DateTime workingHours;
+  int machineCount;
+  bool isEnglishSelected;
+  String phone;
+
+  AirAddressData({
+    required this.address,
+    required this.workingHours,
+    required this.machineCount,
+    required this.isEnglishSelected,
+    required this.phone,
+  });
+
+  Map<String, dynamic> toJson() { //เพื่อแปลงข้อมูลทั้งหมดในอ็อบเจกต์นี้เป็นรูปแบบ JSON
+    return {
+      'address': address,// เพิ่มที่อยู่เข้าไปใน JSON
+      'workingHours': workingHours.toIso8601String(), // เพิ่มที่อยู่เข้าไปใน JSON
+      'machineCount': machineCount, // เพิ่มจำนวนเครื่องเข้าไปใน JSON
+      'isEnglishSelected': isEnglishSelected, // เพิ่มสถานะการเลือกภาษาอังกฤษเข้าไปใน JSON
+      'phone': phone, // เพิ่มเบอร์โทรศัพท์เข้าไปใน JSON
+    };
+  }//เมื่อเรียกใช้ toJson() จะได้ผลลัพธ์เป็น Map ที่เก็บข้อมูลทั้งหมดในรูปแบบ JSON ซึ่งสามารถนำไปใช้ในการส่งข้อมูลไปยัง API หรือบันทึกในฐานข้อมูล JSON ได้.
+  Future<void> sendDataToApi() async {//ใช้ส่งข้อมูลที่เก็บในอ็อบเจกต์ AirAddressData ไปยัง API ที่กำหนด.
+    final apiUrl = 'http://192.168.141.192/addresses';
+    try {// ตรวจสอบข้อมูลเพิ่มเติมตามต้องการ
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: jsonEncode(toJson()), // แปลงข้อมูลในรูปแบบ JSON และส่งไปยัง API
+        headers: {'Content-Type': 'application/json'},//เพื่อบอก API ว่าข้อมูลที่ส่งมาเป็น JSON.
+      );
+
+      if (response.statusCode == 200) {
+        print('ส่งข้อมูลสำเร็จ');
+      } else {
+        print('ไม่สามารถส่งข้อมูลได้. รหัสสถานะ: ${response.statusCode}');
+        // แสดงข้อความข้อผิดพลาดหรือดำเนินการเพิ่มเติมตามต้องการ
+      }
+    } catch (error) {
+     // print('เกิดข้อผิดพลาดในการส่งข้อมูล: $error');
+      // แสดงข้อความข้อผิดพลาดหรือดำเนินการเพิ่มเติมตามต้องการ
+    }
+  }
+}
+
+class AirAddress extends StatefulWidget {//แสดงหน้าจอสำหรับกรอกข้อมูลที่จะส่งไปยัง API และทำการนำข้อมูลไปแสดงผลใน widget อื่น เช่น หน้าตะกร้าสินค้า, หน้าแสดงการชำระเงิน, หรือหน้าอื่น ๆ ตามที่ได้กำหนด.
   @override
   _AirAddressState createState() => _AirAddressState();
 }
 
-class _AirAddressState extends State<AirAddress> {
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController workingHoursController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  int machineCount = 1;
-  bool isEnglishSelected = false;
-  String paymentMethod = '';
-
-  late AirAddressData airAddressData = AirAddressData(
-    address: '',
-    workingHours: DateTime.now(),
-    machineCount: 1,
-    isEnglishSelected: false,
-    phone: '', // ต้องใส่ค่า phone ที่เหมาะสมที่นี่
-  );
-  late Map<String, dynamic> jsonData;
+class _AirAddressState extends State<AirAddress> { //เป็นส่วนที่เก็บสถานะ (state) ของ AirAddress widget.
+  int machineCount = 1; //เก็บจำนวนเครื่องที่ผู้ใช้เลือก. เริ่มต้นที่ 1.
+  bool isEnglishSelected = false; //เก็บสถานะใช้ได้เลือกให้แสดงข้อความเป็นภาษาอังกฤษหรือไม่ (true ถ้าเลือก, false ถ้าไม่เลือก).
+  late AirAddressData airAddressData; //เพื่อเก็บข้อมูลที่ผู้ใช้กรอก เช่น ที่อยู่, เวลาทำงาน, เบอร์โทรศัพท์
 
   @override
   void initState() {
     super.initState();
-    jsonData = {
-      "address": " ",
-      "phone" : " ",
-      "workingHours": "2023-12-01 08:00",
-      "englishSelected": false,
-    };
+    airAddressData = AirAddressData(
+      address: '',
+      workingHours: DateTime.now(),
+      machineCount: 1,
+      isEnglishSelected: false,
+      phone: '',
+    );
   }
 
   @override
@@ -51,6 +86,31 @@ class _AirAddressState extends State<AirAddress> {
           },
         ),
         title: Text('กลับ'),
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.shopping_cart),
+        //     onPressed: () async {
+        //       // นำไปยังหน้าตะกร้าหรือที่คุณต้องการ
+        //       airAddressData.sendDataToApi();  // แก้ไขนี้
+        //       // ตรวจสอบการส่งข้อมูลเสร็จสิ้นก่อนทำการแสดง Dialog
+        //       print(jsonEncode(airAddressData.toJson()));  // แสดงข้อมูลที่จะถูกส่งไป
+        //       int additionalPrice = 0;
+        //
+        //       showDialog(
+        //         context: context,
+        //         builder: (context) => PaymentAir(
+        //           machineCount: machineCount,
+        //           address: airAddressData.address,
+        //           selectedDateTime: airAddressData.workingHours,
+        //           phone: airAddressData.phone,
+        //           isEnglishSelected: isEnglishSelected,
+        //           additionalPrice: additionalPrice,
+        //           totalPrice: 0,  // ใส่ราคารวมที่ต้องการแสดง
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -63,12 +123,10 @@ class _AirAddressState extends State<AirAddress> {
                 style: TextStyle(fontSize: 16),
               ),
               TextField(
-                controller: addressController,
                 maxLines: 1,
                 onChanged: (value) {
-                  // เมื่อมีการเปลี่ยนแปลงในช่องที่อยู่
                   setState(() {
-                    airAddressData.address = value; // อัปเดตค่า address ในข้อมูลที่เก็บ
+                    airAddressData.address = value;
                   });
                 },
                 decoration: InputDecoration(
@@ -81,18 +139,14 @@ class _AirAddressState extends State<AirAddress> {
                 style: TextStyle(fontSize: 16),
               ),
               TextField(
-                controller: phoneController,
                 keyboardType: TextInputType.phone,
-                // กำหนด keyboardType เป็น phone
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                   LengthLimitingTextInputFormatter(10),
-                  // จำกัดจำนวนตัวอักษรที่ใส่ได้เป็น 10 ตัว
                 ],
                 onChanged: (value) {
-                  // เมื่อมีการเปลี่ยนแปลงในช่องเบอร์โทรศัพท์
                   setState(() {
-                    airAddressData.phone = value; // อัปเดตค่า phone ในข้อมูลที่เก็บ
+                    airAddressData.phone = value;
                   });
                 },
                 decoration: InputDecoration(
@@ -106,43 +160,38 @@ class _AirAddressState extends State<AirAddress> {
               ),
               DateTimeField(
                 format: DateFormat("yyyy-MM-dd HH:mm"),
-                onShowPicker: (context, currentValue) {
-                  return showDatePicker(
+                onShowPicker: (context, currentValue) async {
+                  DateTime? selectedDate = await showDatePicker(
                     context: context,
                     firstDate: DateTime(2000),
                     initialDate: currentValue ?? DateTime.now(),
                     lastDate: DateTime(2101),
-                  ).then((selectedDate) {
-                    if (selectedDate != null) {
-                      return showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      ).then((selectedTime) {
-                        if (selectedTime != null) {
-                          setState(() {
-                            airAddressData.workingHours = DateTime(
-                              selectedDate.year,
-                              selectedDate.month,
-                              selectedDate.day,
-                              selectedTime.hour,
-                              selectedTime.minute,
-                            );
-                          });
-                          return DateTime(
-                            selectedDate.year,
-                            selectedDate.month,
-                            selectedDate.day,
-                            selectedTime.hour,
-                            selectedTime.minute,
-                          );
-                        } else {
-                          return currentValue;
-                        }
+                  );
+                  if (selectedDate != null) {
+                    TimeOfDay? selectedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    if (selectedTime != null) {
+                      setState(() {
+                        airAddressData.workingHours = DateTime(
+                          selectedDate.year,
+                          selectedDate.month,
+                          selectedDate.day,
+                          selectedTime.hour,
+                          selectedTime.minute,
+                        );
                       });
-                    } else {
-                      return currentValue;
+                      return DateTime(
+                        selectedDate.year,
+                        selectedDate.month,
+                        selectedDate.day,
+                        selectedTime.hour,
+                        selectedTime.minute,
+                      );
                     }
-                  });
+                  }
+                  return currentValue;
                 },
                 decoration: InputDecoration(
                   hintText: 'เลือกเวลาที่นี่',
@@ -201,70 +250,49 @@ class _AirAddressState extends State<AirAddress> {
               ),
               Center(
                 child: ElevatedButton(
-                  onPressed: () async {
-                    // บันทึกข้อมูลที่กรอก
-                    saveData();
+                  onPressed: () {
+                    airAddressData.sendDataToApi();
+                    // หลังจากที่ส่งข้อมูลสำเร็จ แสดง Dialog หรือทำตามต้องการ
+                    int additionalPrice = 0;
 
-                    // ส่งข้อมูลไปยัง API
-                    await sendDataToApi(jsonData);
-
-                    // นำทางไปยังหน้าถัดไป
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Payment(
-                          address: airAddressData.address,
-                          selectedDateTime: airAddressData.workingHours,
-                          machineCount: machineCount,
-                          phone: airAddressData.phone,
-                        ),
+                    showDialog(
+                      context: context,
+                      builder: (context) => PaymentAir(
+                        machineCount: machineCount,
+                        address: airAddressData.address,
+                        selectedDateTime: airAddressData.workingHours,
+                        phone: airAddressData.phone,
+                        isEnglishSelected: isEnglishSelected,
+                        additionalPrice: additionalPrice,
+                        totalPrice: 0,
                       ),
                     );
                   },
                   child: Text('ยืนยัน'),
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  void saveData() {
-    // อัปเดต jsonData ด้วยข้อมูลที่กรอก
-    jsonData = {
-      'address': airAddressData.address,
-      'workingHours': airAddressData.workingHours.toString(),
-      'englishSelected': airAddressData.isEnglishSelected,
-      'phone': airAddressData.phone, // เพิ่ม phone ใน jsonData
-    };
-    // คุณสามารถบันทึก jsonData ไปยังที่เก็บข้อมูลที่คุณต้องการ (เช่น SharedPreferences, ไฟล์, ฐานข้อมูล) ที่นี่
-  }
+void main() async {
+  // สร้าง instance ของ AirAddressData
+  final airAddressData = AirAddressData(
+    address: 'Your Address',
+    workingHours: DateTime.now(),
+    machineCount: 1,
+    isEnglishSelected: false,
+    phone: 'Your Phone',
+  );
 
-  Future<void> sendDataToApi(Map<String, dynamic> data) async {
-    final apiUrl = 'YOUR_API_URL'; // แทนที่ YOUR_API_URL ด้วย URL ของ API ที่คุณใช้
+  // เรียกใช้ sendDataToApi
+  await airAddressData.sendDataToApi();
 
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        body: jsonEncode(data),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        print('Data sent successfully');
-      } else {
-        print('Failed to send data. Status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error sending data: $error');
-    }
-  }
-
-  void main() {
-    runApp(MaterialApp(
-      home: AirAddress(),
-    ));
-  }
+  runApp(MaterialApp(
+    home: AirAddress(),
+  ));
 }
