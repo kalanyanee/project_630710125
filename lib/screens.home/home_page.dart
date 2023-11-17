@@ -11,39 +11,36 @@ class HomePage extends StatelessWidget {
     {
       'image': 'assets/images/air.png',
       'text': 'ทำความสะอาดเครื่องปรับอากาศ',
-      'route': AirAddress(),
+      'route': const AirAddress(),
     },
     {
       'image': 'assets/images/mop.png',
       'text': 'ทำความสะอาดบ้าน',
-      'route': CleanAddress(),
+      'route': const CleanAddress(),
     },
     {
       'image': 'assets/images/home.png',
       'text': 'Deep Cleaning',
-      'route': DeepAddress(),
+      'route': const DeepAddress(),
     },
     {
       'image': 'assets/images/calendar.png',
       'text': 'จองงานแบบแพ็คเกจ',
-      'route': PackageAddress(),
+      'route': const PackageAddress(),
     },
   ];
 
   @override
   Widget build(BuildContext context) {
-    const double borderRadius = 10.0; // ความโค้งขอบ
-    const double borderWidth = 1.0; // ความหนาขอบ
-    const double shadowBlurRadius = 3.0; // รัศมีความเบลอของเงา
-
+    const double borderRadius = 10.0;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
+        preferredSize: const Size.fromHeight(70),
         child: AppBar(
-          backgroundColor: Colors.green[300],
+          backgroundColor: Colors.teal[300],
           title: Container(
-            margin: EdgeInsets.all(20),
-            child: Text(
+            margin: const EdgeInsets.all(20),
+            child: const Text(
               'ยินดีต้อนรับ',
               style: TextStyle(
                 fontSize: 30,
@@ -53,78 +50,89 @@ class HomePage extends StatelessWidget {
           ),
           centerTitle: true,
           leading: InkWell(
-            child: Icon(
-              Icons.account_circle, // ใช้ไอคอนลูกศรสีขาว
+            child: const Icon(
+              Icons.account_circle,
               size: 40,
             ),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ProfilePage(), // นำทางไปยังหน้า DeepAddress
+                builder: (context) => ProfilePage(),
               ));
             },
           ),
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Align(
-              child: Row(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.12,
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => AirAddress(), // นำทางไปยังหน้า AirAddress
+                        builder: (context) => const AirAddress(),
                       ));
                     },
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 240, // ปรับความกว้าง
-                          height: 270, // ปรับความสูง
-                          decoration: BoxDecoration(
-                            color: Colors.white, //สีกล่อง
-                            borderRadius: BorderRadius.circular(borderRadius),
-                            border: Border.all(
-                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
-                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                    child: Container(
+                      width: 240,
+                      height: 270,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        border: Border.all(
+                          color: Colors.teal.shade100,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 3,
+                            blurRadius: 3,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 0, //สูง
+                            left: 0, //ซ้าย
+                            right: 0, //ขวา
+                            bottom: 0, //ล่าง
+                            child: Image.asset(
+                              'assets/images/air.png',
+                              fit: BoxFit.contain,
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: Image.asset(
-                            'assets/images/air.png',
-                            fit: BoxFit.contain, // ปรับขนาดให้พอดีกับ Container
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 10,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: Text(
-                              'ทำความสะอาดเครื่องปรับอากาศ',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
+                          const Positioned(
+                            bottom: 10,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Text(
+                                'ทำความสะอาดเครื่องปรับอากาศ',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 15),
                   InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CleanAddress(), // นำทางไปยังหน้า CleanAddress
+                        builder: (context) => const CleanAddress(),
                       ));
                     },
                     child: Stack(
@@ -136,19 +144,17 @@ class HomePage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(borderRadius),
                             color: Colors.white,
                             border: Border.all(
-                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
-                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                              color: Colors.teal.shade100,
+                              width: 2,
                             ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: Image.asset(
-                            'assets/images/mop.png', // แทน 'assets/image2.png' ด้วยเส้นทางของรูปภาพที่คุณต้องการใช้
-                            fit: BoxFit.contain,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 3,
+                                blurRadius: 3,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                         ),
                         Positioned(
@@ -162,6 +168,16 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                         Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Image.asset(
+                            'assets/images/mop.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const Positioned(
                           bottom: 10,
                           left: 0,
                           right: 0,
@@ -180,16 +196,14 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            SizedBox(height: 10),
-            Align(
-              child: Row(
+              const SizedBox(height: 15),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DeepAddress(), // นำทางไปยังหน้า DeepAddress
+                        builder: (context) => const DeepAddress(),
                       ));
                     },
                     child: Stack(
@@ -201,9 +215,17 @@ class HomePage extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
-                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                              color: Colors.teal.shade100,
+                              width: 2,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 3,
+                                blurRadius: 3,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                         ),
                         Positioned(
@@ -216,7 +238,7 @@ class HomePage extends StatelessWidget {
                             fit: BoxFit.contain,
                           ),
                         ),
-                        Positioned(
+                        const Positioned(
                           bottom: 10,
                           left: 0,
                           right: 0,
@@ -233,11 +255,11 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 15),
                   InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PackageAddress(), // นำทางไปยังหน้า PackageAddress
+                        builder: (context) => const PackageAddress(),
                       ));
                     },
                     child: Stack(
@@ -249,9 +271,17 @@ class HomePage extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: Colors.green.shade100, // เปลี่ยนสีขอบตามที่ต้องการ
-                              width: 2, // ปรับความหนาขอบตามที่ต้องการ
+                              color: Colors.teal.shade100,
+                              width: 2,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 3,
+                                blurRadius: 3,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                         ),
                         Positioned(
@@ -264,7 +294,7 @@ class HomePage extends StatelessWidget {
                             fit: BoxFit.contain,
                           ),
                         ),
-                        Positioned(
+                        const Positioned(
                           bottom: 10,
                           left: 0,
                           right: 0,
@@ -283,16 +313,15 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-void main() {
-  runApp(MaterialApp(
-    home: HomePage(),
-  ));
-}
+    void main() {
+      runApp(MaterialApp(
+        home: HomePage(), //
+      ));
+    }

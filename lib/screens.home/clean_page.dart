@@ -33,20 +33,20 @@ class CleanAddressData {
       'phone': phone,
     };
   }
-  Future<void> sendDataToApi() async {//ใช้ส่งข้อมูลที่เก็บในอ็อบเจกต์ AirAddressData ไปยัง API ที่กำหนด.
-    final apiUrl = 'http://192.168.141.192/addresses';
-    try {// ตรวจสอบข้อมูลเพิ่มเติมตามต้องการ
+  Future<void> sendDataToApi() async {
+    const apiUrl = 'http://192.168.141.192/addresses';
+    try {
       final response = await http.post(
         Uri.parse(apiUrl),
-        body: jsonEncode(toJson()), // แปลงข้อมูลในรูปแบบ JSON และส่งไปยัง API
-        headers: {'Content-Type': 'application/json'},//เพื่อบอก API ว่าข้อมูลที่ส่งมาเป็น JSON.
+        body: jsonEncode(toJson()),
+        headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
         print('ส่งข้อมูลสำเร็จ');
       } else {
         print('ไม่สามารถส่งข้อมูลได้. รหัสสถานะ: ${response.statusCode}');
-        // แสดงข้อความข้อผิดพลาดหรือดำเนินการเพิ่มเติมตามต้องการ
+
       }
     } catch (error) {
       // print('เกิดข้อผิดพลาดในการส่งข้อมูล: $error');
@@ -56,6 +56,8 @@ class CleanAddressData {
 }
 
 class CleanAddress extends StatefulWidget {
+  const CleanAddress({super.key});
+
   @override
   _CleanAddressState createState() => _CleanAddressState();
 }
@@ -85,35 +87,15 @@ class _CleanAddressState extends State<CleanAddress> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal[300],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('กลับ'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () async {
-              await sendDataToApi(cleanAddressData);
-              print(jsonEncode(cleanAddressData.toJson()));
-              showDialog(
-                context: context,
-                builder: (context) => PaymentClean(
-                  machineCount: countRoom,
-                  address: addressController.text,
-                  selectedDateTime: cleanAddressData.workingHours,
-                  phone: phoneController.text,
-                  isEnglishSelected: isEnglishSelected,
-                  timeCount: countTime,
-                  additionalPrice: 0,
-                  totalPrice: 0,
-                ),
-              );
-            },
-          ),
-        ],
+        title: const Text('กลับ'),
+
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -121,7 +103,7 @@ class _CleanAddressState extends State<CleanAddress> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'ที่อยู่:',
                 style: TextStyle(fontSize: 16),
               ),
@@ -133,12 +115,12 @@ class _CleanAddressState extends State<CleanAddress> {
                     cleanAddressData.address = value;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'ใส่รายละเอียดที่อยู่ของคุณที่นี่',
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'เบอร์:',
                 style: TextStyle(fontSize: 16),
               ),
@@ -153,12 +135,12 @@ class _CleanAddressState extends State<CleanAddress> {
                     cleanAddressData.phone = value;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'ใส่เบอร์โทรศัพท์',
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'เวลาจอง:',
                 style: TextStyle(fontSize: 16),
               ),
@@ -197,20 +179,20 @@ class _CleanAddressState extends State<CleanAddress> {
                   }
                   return currentValue;
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'เลือกเวลาที่นี่',
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'เวลาทำงาน:',
                 style: TextStyle(fontSize: 16),
               ),
               Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.remove),
+                    icon: const Icon(Icons.remove),
                     onPressed: () {
                       if (countTime > 1) {
                         setState(() {
@@ -221,14 +203,14 @@ class _CleanAddressState extends State<CleanAddress> {
                   ),
                   Text(
                     countTime.toString(),
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  Text(
+                  const Text(
                     ' ชั่วโมง',
                     style: TextStyle(fontSize: 16),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add),
+                    icon: const Icon(Icons.add),
                     onPressed: () {
                       setState(() {
                         countTime++;
@@ -237,15 +219,15 @@ class _CleanAddressState extends State<CleanAddress> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'จำนวนห้อง:',
                 style: TextStyle(fontSize: 16),
               ),
               Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.remove),
+                    icon: const Icon(Icons.remove),
                     onPressed: () {
                       if (countRoom > 1) {
                         setState(() {
@@ -256,10 +238,10 @@ class _CleanAddressState extends State<CleanAddress> {
                   ),
                   Text(
                     countRoom.toString(),
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add),
+                    icon: const Icon(Icons.add),
                     onPressed: () {
                       setState(() {
                         countRoom++;
@@ -268,10 +250,10 @@ class _CleanAddressState extends State<CleanAddress> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
-                  Text(
+                  const Text(
                     'พูดภาษาอังกฤษ',
                     style: TextStyle(fontSize: 16),
                   ),
@@ -291,16 +273,13 @@ class _CleanAddressState extends State<CleanAddress> {
                 child: ElevatedButton(
                   onPressed: () {
                     cleanAddressData.sendDataToApi();
-                    // หลังจากที่ส่งข้อมูลสำเร็จ แสดง Dialog หรือทำตามต้องการ
-                    //int additionalPrice = 0;
-
                     showDialog(
                       context: context,
                       builder: (context) => PaymentClean(
                         machineCount: countRoom,
-                        address: addressController.text,
+                        address: cleanAddressData.address,
                         selectedDateTime: cleanAddressData.workingHours,
-                        phone: phoneController.text,
+                        phone: cleanAddressData.phone,
                         isEnglishSelected: isEnglishSelected,
                         timeCount: countTime,
                         additionalPrice: 0,
@@ -308,7 +287,10 @@ class _CleanAddressState extends State<CleanAddress> {
                       ),
                     );
                   },
-                  child: Text('ยืนยัน'),
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.teal.shade300
+                  ),
+                  child: const Text('ยืนยัน'),
                 ),
               ),
             ],
@@ -319,27 +301,8 @@ class _CleanAddressState extends State<CleanAddress> {
   }
 }
 
-Future<void> sendDataToApi(CleanAddressData data) async {
-  final apiUrl = 'http://192.168.141.192/addresses';
-
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      body: jsonEncode(data.toJson()),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      print('ส่งข้อมูลสำเร็จ');
-    } else {
-      print('ไม่สามารถส่งข้อมูลได้. รหัสสถานะ: ${response.statusCode}');
-    }
-  } catch (error) {
-    //print('เกิดข้อผิดพลาดในการส่งข้อมูล: $error');
-  }
-}
-
 void main() {
+
   runApp(MaterialApp(
     home: CleanAddress(),
   ));

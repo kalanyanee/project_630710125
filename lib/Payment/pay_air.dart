@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'Payment.dart'; // นำเข้า MakePayment ที่ถูกต้อง
+import 'Payment.dart';
 
 class PaymentAir extends StatelessWidget {
 
@@ -16,7 +16,6 @@ class PaymentAir extends StatelessWidget {
 
   const PaymentAir({
     Key? key,
-
     required this.machineCount,
     required this.address,
     required this.selectedDateTime,
@@ -31,13 +30,14 @@ class PaymentAir extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { //
     final SetTime = DateFormat("yyyy-MM-dd HH:mm");
     int additionalPrice = calculateAdditionalPrice();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('กลับ'),
+        backgroundColor: Colors.teal[400],
+        title: const Text('กลับ'),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, top: 10, right: 0, bottom: 10),
@@ -45,32 +45,37 @@ class PaymentAir extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('ที่อยู่: ${address.toString()}'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('เบอร์: $phone'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('เวลาทำงาน: ${SetTime.format(selectedDateTime)}'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('จำนวนเครื่อง: $machineCount เครื่อง'),
-            Text('ราคาต่อเครื่อง: 800 บาท'),
-            SizedBox(height: 20),
+            const Text('ราคาต่อเครื่อง: 800 บาท'),
+            const SizedBox(height: 20),
             if (isEnglishSelected)
-              Text('พูดภาษาอังกฤษได้'),
-            SizedBox(height: 20),
+              const Text('พูดภาษาอังกฤษได้'),
+            const SizedBox(height: 20),
             Text('ราคารวม: ${totalPrice + additionalPrice} บาท'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MakePayment(paymentMethod: 'yourPaymentMethod'),
-                  ),
-                );
-              },
-              child: Text('ยืนยันการชำระเงิน'),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                 Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MakePayment(paymentMethod: ''),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.teal.shade400
+               ),
+                child: const Text('ยืนยันการชำระเงิน'),
+              ),
             ),
           ],
         ),

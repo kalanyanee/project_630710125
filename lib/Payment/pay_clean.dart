@@ -38,14 +38,14 @@ class PaymentClean extends StatelessWidget {
     }
 
     if (machineCount > 1) {
-      calculatednalPriceroom += (machineCount - 1) * 300; // ห้องที่ 2 เป็นต้นไป คิดเพิ่ม 300 บาทต่อห้อง
+      calculatednalPriceroom += (machineCount-1 ) * 300;
     }
-
     totalPrice = (calculatednalPricetime + calculatednalPriceroom );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('กลับ'),
+        backgroundColor: Colors.teal[300],
+        title: const Text('กลับ'),
       ),
       body: Container(
         child: Padding(
@@ -54,33 +54,39 @@ class PaymentClean extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text('ที่อยู่: ${address.toString()}'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text('เบอร์: $phone'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text('เวลาจอง: ${SetTime.format(selectedDateTime)}'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text('เวลาทำงาน: $timeCount  ชั่วโมง'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text('จำนวนเห้อง: $machineCount ห้อง'),
-              Text('ราคาต่อห้อง: 300 บาท'),
-              SizedBox(height: 20),
-              if (isEnglishSelected) // ตรวจสอบว่าถูกเลือกในการพูดภาษาอังกฤษหรือไม่
-                Text('พูดภาษาอังกฤษได้'),
-              SizedBox(height: 20),
+              const Text('ราคาต่อห้อง: 300 บาท'),
+              const SizedBox(height: 20),
+              if (isEnglishSelected)
+                const Text('พูดภาษาอังกฤษได้'),
+              const SizedBox(height: 20),
               Text('ราคารวม: $totalPrice บาท'),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                Navigator.push(
-                context,
-                  MaterialPageRoute(
-                    builder: (context) => MakePayment(paymentMethod: 'yourPaymentMethod'),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                 onPressed: () {
+                   Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MakePayment(paymentMethod: ''),
                     ),
                   );
-                },
-                child: Text('ยืนยันการชำระเงิน'),
+                 },
+                 style: ElevatedButton.styleFrom(
+                  primary: Colors.teal.shade400
+                 ),
+                  child: const Text('ยืนยันการชำระเงิน'),
+                ),
               ),
             ],
           ),

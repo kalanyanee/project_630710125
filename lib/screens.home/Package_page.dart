@@ -35,21 +35,43 @@ class PackageAddressData {
       'phone': phone,
     };
   }
+  Future<void> sendDataToApi() async {
+    const apiUrl = 'http://192.168.141.192/addresses';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: jsonEncode(toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        print('ส่งข้อมูลสำเร็จ');
+      } else {
+        print('ไม่สามารถส่งข้อมูลได้. รหัสสถานะ: ${response.statusCode}');
+      }
+    } catch (error) {
+      //print('เกิดข้อผิดพลาดในการส่งข้อมูล: $error');
+    }
+  }
 }
 
 class PackageAddress extends StatefulWidget {
+  const PackageAddress({super.key});
+
   @override
   _PackageAddressState createState() => _PackageAddressState();
 }
 
 class _PackageAddressState extends State<PackageAddress> {
   final TextEditingController addressController = TextEditingController();
-  String phone = ''; // เปลี่ยนจาก PackageAddress.phone เป็นตัวแปรอินสแตนซ์
-  int? selectedRoomSize = 0; // ขนาดห้องเริ่มต้น
-  int? selectedPackageDays = 4; // แพ็คเกจเริ่มต้น (2 วัน)
-  late DateTime? selectedDate; // ตัวแปรในการเก็บวันที่ที่เลือก
-  late TimeOfDay? selectedTime; // ตัวแปรในการเก็บเวลาที่เลือก
+  String phone = '';
+  int? selectedRoomSize = 0;
+  int? selectedPackageDays = 4;
+  late DateTime? selectedDate;
+  late TimeOfDay? selectedTime;
   late PackageAddressData packageAddressData;
+  bool isEnglishSelected = false;
 
   @override
   void initState() {
@@ -68,13 +90,14 @@ class _PackageAddressState extends State<PackageAddress> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal[300],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('กลับ'),
+        title: const Text('กลับ'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -82,19 +105,19 @@ class _PackageAddressState extends State<PackageAddress> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'ที่อยู่:',
                 style: TextStyle(fontSize: 16),
               ),
               TextField(
                 controller: addressController,
                 maxLines: 1,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'ใส่รายละเอียดที่อยู่ของคุณที่นี่',
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'เบอร์:',
                 style: TextStyle(fontSize: 16),
               ),
@@ -109,12 +132,12 @@ class _PackageAddressState extends State<PackageAddress> {
                     packageAddressData.phone = value;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'ใส่เบอร์โทรศัพท์',
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'ขนาดห้อง/บ้าน:',
                 style: TextStyle(fontSize: 16),
               ),
@@ -129,7 +152,7 @@ class _PackageAddressState extends State<PackageAddress> {
                     });
                   },
                 ),
-                Text('1-120 ตร.ม.'),
+                const Text('1-120 ตร.ม.'),
                 Radio(
                   value: 121,
                   groupValue: selectedRoomSize,
@@ -139,7 +162,7 @@ class _PackageAddressState extends State<PackageAddress> {
                     });
                   },
                 ),
-                Text('121-160 ตร.ม.'),
+                const Text('121-160 ตร.ม.'),
                 Radio(
                   value: 161,
                   groupValue: selectedRoomSize,
@@ -149,7 +172,7 @@ class _PackageAddressState extends State<PackageAddress> {
                     });
                   },
                 ),
-                Text('161-220 ตร.ม.'),
+                const Text('161-220 ตร.ม.'),
                 Radio(
                   value: 221,
                   groupValue: selectedRoomSize,
@@ -159,36 +182,47 @@ class _PackageAddressState extends State<PackageAddress> {
                     });
                   },
                 ),
-                Text('221-280 ตร.ม.'),
+                const Text('221-280 ตร.ม.'),
               ],
             ),
 
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'จำนวนวัน/เดือน:',
               style: TextStyle(fontSize: 16),
             ),
             Row(
               children: [
-                for (int daysOption in [4, 5, 6, 7]) // รายการวันที่เลือก
-                  Column(
-                    children: [
-                      Radio(
-                        value: daysOption,
-                        groupValue: selectedPackageDays,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedPackageDays = value;
-                          });
-                        },
-                      ),
-                      Text('$daysOption วัน'),
-                    ],
+                for (int daysOption in [4, 5, 6, 7])
+                  Padding(
+                    padding: daysOption == 4
+                        ? EdgeInsets.zero
+                        : const EdgeInsets.only(bottom:0,left: 9),
+                    child: Column(
+                      children: [
+                        Radio(
+                          value: daysOption,
+                          groupValue: selectedPackageDays,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedPackageDays = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: daysOption == 4
+                              ? EdgeInsets.zero
+                              : const EdgeInsets.only(left: 4),
+                          child: Text('$daysOption วัน'),
+                        ),
+                      ],
+                    ),
                   ),
               ],
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'เวลาจอง:',
               style: TextStyle(fontSize: 16),
             ),
@@ -231,18 +265,37 @@ class _PackageAddressState extends State<PackageAddress> {
                     }
                     return currentValue;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'เลือกเวลาที่นี่',
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                 );
               }),
             ),
-            SizedBox(height: 20),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Text(
+                    'พูดภาษาอังกฤษ',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Checkbox(
+                    value: isEnglishSelected,
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          isEnglishSelected = value;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  sendDataToApi(packageAddressData);
+                  packageAddressData.sendDataToApi();
                   showDialog(
                     context: context,
                     builder: (context) => Package(
@@ -251,46 +304,27 @@ class _PackageAddressState extends State<PackageAddress> {
                       selectedPackageDays:selectedPackageDays,
                       selectedDateTime: packageAddressData.workingHours,
                       phone: packageAddressData.phone,
-                      isEnglishSelected: packageAddressData.isEnglishSelected,
+                      isEnglishSelected: isEnglishSelected,
 
                     ),
                   );
                 },
-
-                child: Text('ยืนยัน'),//กดยืนยันให้ไปหน้าคำนวนเงินที่ต้องจ่าย
-              ),
-            )
-
-          ],
-
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.teal.shade300
+                ),
+                child: const Text('ยืนยัน'),
+                ),
+              )
+            ],
+          ),
         ),
       ),
-      ),
     );
   }
 }
 
-Future<void> sendDataToApi(PackageAddressData data) async {
-  final apiUrl = 'http://192.168.141.192/addresses';
-
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      body: jsonEncode(data.toJson()),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      print('ส่งข้อมูลสำเร็จ');
-    } else {
-      print('ไม่สามารถส่งข้อมูลได้. รหัสสถานะ: ${response.statusCode}');
-    }
-  } catch (error) {
-    //print('เกิดข้อผิดพลาดในการส่งข้อมูล: $error');
-  }
-}
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: PackageAddress(),
   ));
 }

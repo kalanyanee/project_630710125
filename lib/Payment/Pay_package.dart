@@ -23,9 +23,7 @@ class Package extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // กำหนดรูปแบบวันที่
     final formattedDate = DateFormat("yyyy-MM-dd HH:mm").format(selectedDateTime);
-
     // คำนวณราคาตามเงื่อนไขที่กำหนด
     int totalAmount = 0;
     if (selectedRoomSize == 0) {
@@ -70,12 +68,8 @@ class Package extends StatelessWidget {
       }
     }
 
-    // เพิ่มขึ้นมา: สร้าง DateTime ที่เริ่มต้นจาก selectedDateTime
     DateTime startDate = selectedDateTime;
-    // เพิ่มขึ้นมา: ให้ startDate เป็นวันที่เลือกบวกกับจำนวนวันที่เลือก
     startDate = startDate.add(Duration(days: selectedPackageDays ?? 0));
-
-    // เพิ่มขึ้นมา: สร้าง List ของ Widget สำหรับเก็บวันที่และเวลา
     List<Widget> dateWidgets = [];
     for (int index = 1; index < (selectedPackageDays ?? 0); index++) {
       DateTime dateToAdd = startDate.add(Duration(days: index));
@@ -85,7 +79,8 @@ class Package extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('กลับ'),
+        backgroundColor: Colors.teal[300],
+        title: const Text('กลับ'),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, top: 10, right: 0, bottom: 10),
@@ -93,32 +88,39 @@ class Package extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('ที่อยู่: ${address.toString()}'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('เบอร์: $phone'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('เลือกขนาดบ้าน: ${getRoomSizeText(selectedRoomSize)} ตร.ม'),
-            SizedBox(height: 20),
-            Text('เวลาจอง:'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const Text('เวลาจอง:'),
+            const SizedBox(height: 20),
             Text('วันที่1: ${DateFormat("yyyy-MM-dd HH:mm").format(startDate)}'),
-            // เพิ่มขึ้นมา: แสดงวันที่และเวลาตามจำนวนวันที่เลือก
             ...dateWidgets,
-            // ต่อไปเป็นเพิ่มที่เดียว
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            if (isEnglishSelected)
+              const Text('พูดภาษาอังกฤษได้'),
+            const SizedBox(height: 20),
             Text('ราคา: $totalAmount บาท'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MakePayment(paymentMethod: 'yourPaymentMethod'),
-                  ),
-                );
-              },
-              child: Text('ยืนยันการชำระเงิน'),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MakePayment(paymentMethod: 'yourPaymentMethod'),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.teal.shade400
+                ),
+                child: const Text('ยืนยันการชำระเงิน'),
+              ),
             ),
           ],
         ),
@@ -136,7 +138,6 @@ class Package extends StatelessWidget {
         return '161-220';
       case 221:
         return '221-280';
-    // เพิ่ม case ต่อไปตามความต้องการ
       default:
         return '';
     }

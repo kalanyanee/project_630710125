@@ -30,21 +30,19 @@ class PaymentDeepClean extends StatelessWidget {
       case '221-280':
         return 4250;
       default:
-        return 0; // ราคาเริ่มต้นหรือการจัดการกรณีที่จำเป็น
+        return 0;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // คำนวณราคารวมตามขนาดบ้านที่เลือก
     final totalAmount = calculatePrice(houseSize);
-
-    // กำหนดรูปแบบวันที่
     final formattedDate = DateFormat("yyyy-MM-dd HH:mm").format(selectedDateTime);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('กลับ'),
+        backgroundColor: Colors.teal[400],
+        title: const Text('กลับ'),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, top: 10, right: 0, bottom: 10),
@@ -52,28 +50,37 @@ class PaymentDeepClean extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('ที่อยู่: ${address.toString()}'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('เบอร์: $phone'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('เลือกขนาดบ้าน: $houseSize ตร.ม'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text('เวลาจอง: $formattedDate'),
-            SizedBox(height: 20),
-            Text('ราคา: $totalAmount บาท'),
-            SizedBox(height: 20),
-          ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MakePayment(paymentMethod: 'yourPaymentMethod'),
+            const SizedBox(height: 20),
+            if (isEnglishSelected)
+              const Text('พูดภาษาอังกฤษได้'),
+            const SizedBox(height: 20),
+            Text('ราคารวม: $totalAmount บาท'),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MakePayment(paymentMethod: ''),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.teal.shade400
+                ),
+                child: const Text('ยืนยันการชำระเงิน'),
               ),
-            );
-          },
-            child: Text('ยืนยันการชำระเงิน'),
-        ),
+            ),
           ],
         ),
       ),
